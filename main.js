@@ -8,9 +8,14 @@ const url = require("url");
 let win;
 
 function createWindow() {
-    win = new browserWindow();
+    win = new browserWindow({
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+        }
+    });
     win.loadURL(url.format({
-        pathname: path.join(__dirname, 'index.html'),
+        pathname: path.join(__dirname, 'UI/index.html'),
         protocol: 'file',
         slashes: true
     }));
