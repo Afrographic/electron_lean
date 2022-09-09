@@ -9,20 +9,32 @@ let win;
 
 function createWindow() {
     win = new browserWindow({
-        webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false,
-        }
+        width: 400,
+        height: 400,
+        maxWidth: 800,
+        maxHeight: 600,
+        frame: false,
+        alwaysOnTop: true,
+        show: false
     });
+
+
     win.loadURL(url.format({
         pathname: path.join(__dirname, 'UI/index.html'),
         protocol: 'file',
         slashes: true
     }));
     win.webContents.openDevTools();
+
     win.on("closed", () => {
         win = null;
     })
+
+    win.once("ready-to-show", () => {
+        win.show();
+    })
+
+
 }
 
 app.on('ready', createWindow);
