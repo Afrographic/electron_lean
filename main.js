@@ -1,3 +1,4 @@
+const { ipcMain, BrowserWindow } = require("electron");
 const electron = require("electron");
 const app = electron.app;
 const browserWindow = electron.BrowserWindow;
@@ -9,21 +10,29 @@ let win;
 
 function createWindow() {
     win = new browserWindow({
-        width: 400,
-        height: 400,
-        maxWidth: 800,
-        maxHeight: 600,
-        frame: false,
-        alwaysOnTop: true,
-        show: false
+        width: 800,
+        height: 600,
+        webPreferences: {
+            preload: path.join(__dirname, 'UI/maatElectronAPI.js')
+        }
+        // maxWidth: 800,
+        // maxHeight: 600,
+        // frame: false,
+        // alwaysOnTop: true,
+        // show: false
     });
 
+    // Events
+    ipcMain.on("fuck-her", (event, title) => {
+        console.log("Payload " + title);
+        const webContents = event.sender;
+        // const win = browserWindow.fromBrowserView(webContents);
+        win.setTitle(title);
+    })
 
-    win.loadURL(url.format({
-        pathname: path.join(__dirname, 'UI/index.html'),
-        protocol: 'file',
-        slashes: true
-    }));
+
+    win.loadFile('UI/index.html');
+
     win.webContents.openDevTools();
 
     win.on("closed", () => {
