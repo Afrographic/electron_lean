@@ -5,6 +5,7 @@ const browserWindow = electron.BrowserWindow;
 const { platform } = require("os");
 const path = require("path");
 const url = require("url");
+const Menu = electron.Menu;
 
 let win;
 
@@ -23,11 +24,12 @@ function createWindow() {
     });
 
     // Events
-    ipcMain.on("fuck-her", (event, title) => {
-        console.log("Payload " + title);
+    ipcMain.on("fuck-her", (event, payload) => {
+        console.log("Payload " + payload.title);
         const webContents = event.sender;
         // const win = browserWindow.fromBrowserView(webContents);
-        win.setTitle(title);
+        win.setTitle(payload.title);
+        event.returnValue = "Love is everything!";
     })
 
 
@@ -46,7 +48,38 @@ function createWindow() {
 
 }
 
-app.on('ready', createWindow);
+app.on('ready', function () {
+    createWindow();
+    buildMenu();
+});
+
+function buildMenu() {
+    const template = [
+        {
+            label: "Demo",
+            submenu: [
+                {
+                    label: "Demo1",
+                    click: function () {
+                        console.log("Clicked Demo1")
+                    }
+                },
+
+                {
+                    label: "Demo2"
+                },
+            ]
+        },
+        {
+            label: "Help",
+            click: function () {
+                electron.shell.openExternal(`D:/Programs Files/FL Studio 20/FL64.exe`)
+            }
+        }
+    ];
+    const menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
+}
 
 // if on mac
 
