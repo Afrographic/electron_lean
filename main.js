@@ -1,4 +1,4 @@
-const { ipcMain, BrowserWindow } = require("electron");
+const { ipcMain, BrowserWindow, Tray } = require("electron");
 const electron = require("electron");
 const app = electron.app;
 const browserWindow = electron.BrowserWindow;
@@ -6,6 +6,7 @@ const { platform } = require("os");
 const path = require("path");
 const url = require("url");
 const Menu = electron.Menu;
+
 
 let win;
 
@@ -15,7 +16,8 @@ function createWindow() {
         height: 600,
         webPreferences: {
             preload: path.join(__dirname, 'UI/maatElectronAPI.js')
-        }
+        },
+        icon: path.join(__dirname, 'UI/images/Isis.png')
         // maxWidth: 800,
         // maxHeight: 600,
         // frame: false,
@@ -26,9 +28,9 @@ function createWindow() {
     // Events
     ipcMain.on("fuck-her", (event, payload) => {
         console.log("Payload " + payload.title);
-        const webContents = event.sender;
-        // const win = browserWindow.fromBrowserView(webContents);
         win.setTitle(payload.title);
+        electron.shell.showItemInFolder("D:\\Tutos\\Electron\\Start - 8.txt");
+        electron.shell.openPath("D:\\Tutos\\Electron\\Start - 8.txt");
         event.returnValue = "Love is everything!";
     })
 
@@ -51,6 +53,43 @@ function createWindow() {
 app.on('ready', function () {
     createWindow();
     buildMenu();
+    let tray = new Tray(path.join(__dirname, 'UI/images/Isis.png'));
+
+    // Menu for tray 
+    let template = [
+        {
+            label: "Audio",
+            submenu: [
+                {
+                    label: 'Low',
+                    type: 'radio',
+                    checked: true
+                },
+                {
+                    label: 'High',
+                    type: 'radio'
+                },
+            ]
+        },
+        {
+            label: "Video",
+            submenu: [
+                {
+                    label: '1280x720',
+                    type: 'radio',
+                    checked: true
+                },
+                {
+                    label: '1920x1080',
+                    type: 'radio'
+                },
+            ]
+        }
+    ]
+
+    const ctxMenu = Menu.buildFromTemplate(template);
+    tray.setContextMenu(ctxMenu);
+    tray.setToolTip("Imhotep");
 });
 
 function buildMenu() {
