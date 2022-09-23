@@ -6,6 +6,7 @@ const { platform } = require("os");
 const path = require("path");
 const url = require("url");
 const Menu = electron.Menu;
+const fs = require("fs");
 
 
 let win;
@@ -26,11 +27,25 @@ function createWindow() {
     });
 
     // Events
-    ipcMain.on("fuck-her", (event, payload) => {
-        console.log("Payload " + payload.title);
-        win.setTitle(payload.title);
-        electron.shell.showItemInFolder("D:\\Tutos\\Electron\\Start - 8.txt");
-        electron.shell.openPath("D:\\Tutos\\Electron\\Start - 8.txt");
+    ipcMain.on("createFile", (event, payload) => {
+        console.log('Fuck');
+        let location = path.join(__dirname, "files")
+        let fileName = payload.title;
+        let file = path.join(location, fileName);
+        let fileContent = payload.content;
+        fs.writeFile(file, fileContent, function (err) {
+            if (err) return console.log("Error");
+            console.log("The file was created");
+        })
+
+
+        //  read the created file
+        fs.readFile(file, function (err, data) {
+            if (err) return console.log("Error all over the place lol");
+
+            console.log("Content" + data);
+        })
+
         event.returnValue = "Love is everything!";
     })
 
@@ -46,7 +61,6 @@ function createWindow() {
     win.once("ready-to-show", () => {
         win.show();
     })
-
 
 }
 
